@@ -6,30 +6,42 @@ document.addEventListener('DOMContentLoaded', setup);
 
 
 function setup() {
-    let arr = [64,16,16,4];
+
+
+    let arr = [16,128,0,0];
 
     console.log(arr)
-    const stacked = [];
+    while (findEqualAdjacent(arr)) {
+        arr = stackArray(arr)
+        console.log(arr)
+    }
 
-    arr.forEach((element, index) => {
-        if (index < arr.length - 2) {
-            if (element == arr[index + 1]) {
-                stacked[index] = element + arr[index + 1];
-                //splitting algorithm to remove the next value that has been added.
-                const rightSplit = arr.splice(index + 1)
-                rightSplit.shift()
-                rightSplit.forEach(val => arr.push(val))
-            } else {
-                stacked[index] = element;
-            }
 
-        }
-    });
-
-    console.log(stacked)
-    console.log(arr)
+    
 }
 
 function stackArray(arr) {
 
+    let mergeOccured = false;
+    arr.forEach((element, index) => {
+        if (index < arr.length - 1 && !mergeOccured) {
+            if (element == arr[index + 1]) {
+                arr[index] = element + arr[index + 1];
+                arr = arr.filter((v,i) => i !== index + 1);
+                //splitting algorithm to remove the next value that has been added.
+                mergeOccured = true;
+            }
+            console.log('pass ' + index + ': ' + arr);
+        }
+    })
+    while (arr.length < 4) {
+        arr.push(0);
+    }
+
+
+    return arr
+}
+
+function findEqualAdjacent(arr) {
+    return arr.find((v,i) => v == arr[i+1])
 }
