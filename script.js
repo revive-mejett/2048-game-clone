@@ -1,19 +1,26 @@
-'use strict'
+'use strict';
 
 
 
 document.addEventListener('DOMContentLoaded', setup);
-
-
+const grid = [[16,0,4,16],[16,0,4,16],[16,0,4,16],[16,0,4,16]];
+const GRID_SIZE = 4;
 function setup() {
 
 
-    let arr = [16,128,0,0];
+    let test = [0,4,16,0];
+    console.log(test);
+    test = shiftArrayElements(test)
+    console.log(test)
+    let arr = [4,4,16,16];
+    console.log(arr);
+    arr.reverse();
+    console.log(grid);
 
     console.log(arr)
     while (findEqualAdjacent(arr)) {
-        arr = stackArray(arr)
-        console.log(arr)
+        arr = stackArray(arr);
+        console.log(arr);
     }
 
 
@@ -34,7 +41,7 @@ function stackArray(arr) {
             console.log('pass ' + index + ': ' + arr);
         }
     })
-    while (arr.length < 4) {
+    while (arr.length < GRID_SIZE) {
         arr.push(0);
     }
 
@@ -44,4 +51,12 @@ function stackArray(arr) {
 
 function findEqualAdjacent(arr) {
     return arr.find((v,i) => v == arr[i+1])
+}
+
+function shiftArrayElements(arr) {
+    while(arr[0] == 0) {
+        arr.shift();
+        arr.push(0);
+    }
+    return arr
 }
