@@ -212,8 +212,8 @@ function placeNewNumber() {
     console.log(grid)
     //pick a new cell by random if the cell value isnt 0
     while (grid[randRowIndex][randColIndex] != 0) {
-        randRowIndex = randomInt(GRID_SIZE) + 1;
-        randColIndex = randomInt(GRID_SIZE) + 1;
+        randRowIndex = randomInt(GRID_SIZE);
+        randColIndex = randomInt(GRID_SIZE);
         console.log('akshan')
     }
     grid[randRowIndex][randColIndex] = newNumber;
