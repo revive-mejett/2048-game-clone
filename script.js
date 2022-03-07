@@ -12,7 +12,6 @@ function setup() {
     leftOption()
     console.table(grid)
 
-    const arr = [2,2,2,2]
     while (findEqualAdjacent(arr)) {
         arr = stackArray(arr);
         console.log(arr);
@@ -24,15 +23,19 @@ function setup() {
 
 function stackArray(arr) {
 
-    let mergeOccured = false;
+    let isModified = false;
     arr.forEach((element, index) => {
-        if (index < arr.length - 1 && !mergeOccured) {
-            if (element == arr[index + 1]) {
+        if (index < arr.length - 1 && !isModified) {
+            if (element == 0) {
+                arr = arr.filter((v,i) => i !== index);
+                arr.push(0);
+                isModified = true;
+            } else if (element == arr[index + 1]) {
                 arr[index] = element + arr[index + 1];
                 //splitting algorithm to remove the next value that has been added.
                 arr = arr.filter((v,i) => i !== index + 1);
                 
-                mergeOccured = true;
+                isModified = true;
             }
             // console.log('pass ' + index + ': ' + arr);
         }
@@ -52,9 +55,18 @@ function leftOption() {
 
     //do this for each row.
     for (let i = 0; i < grid.length; i++) {
+        console.log('akshan pass ' + (i+1))
         let row = extractRow(i);
+        console.log('extracted: ' + row)
         row = shiftArrayElements(row);
+        
         row = stackArray(row);
+        while (findEqualAdjacent(row)) {
+            row = stackArray(row);
+            console.log('stacked: ' + row)
+            row = shiftArrayElements(row);
+            console.log('shifted: ' + row)
+        }
         replaceRow(row, i);
     }
 
@@ -75,7 +87,21 @@ function shiftArrayElements(arr) {
         arr.shift();
         arr.push(0);
     }
-    return arr
+
+    let squishedZeros = true;
+    while (squishedZeros) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] == 0 && i != arr.length - 1) {
+                arr = arr.filter((v,index) => i !== index);
+                arr.push(0);
+                squishedZeros = true;
+                break;
+            }
+        }
+        squishedZeros = false;
+        return arr
+    }
+    
 }
 
 /**Extracts a row from the grid (2d array)
