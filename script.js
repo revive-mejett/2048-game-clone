@@ -3,18 +3,42 @@
 
 
 document.addEventListener('DOMContentLoaded', setup);
-const grid = [[16,0,8,16],[0,0,2,4],[4,4,4,8],[128,0,2,4]];
+// const tgrid = [[16,0,8,16],[0,0,2,4],[4,4,4,8],[2048,0,2,4]];
+const grid = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 const GRID_SIZE = 4;
 function setup() {
 
-    console.table(grid)
+    placeNewNumber();
+    updateGrid();
 
-    makeMove(true, false, true)
-    console.table(grid)
-
-    
+    document.addEventListener('keypress', evt => keyInputHandler(evt))
 }
 
+function keyInputHandler(evt) {
+    const keyInput = evt.key.toLowerCase();
+    console.log(keyInput);
+
+    switch (keyInput) {
+        //left
+        case 'a':
+            makeMove(false, false, false)
+            break;
+        //right
+        case 'd':
+            makeMove(false, true, false)
+            break;
+        //up
+        case 'w':
+            makeMove(true, false, false)
+            break;
+        //down
+        case 's':
+            makeMove(true, false, true)
+            break;
+        default:
+            break;
+    }
+}
 function stackArray(arr) {
 
     let isModified = false;
@@ -41,42 +65,33 @@ function stackArray(arr) {
 
 function makeMove(isUpDown, isRight, isDown) {
     for (let i = 0; i < grid.length; i++) {
-        console.log('akshan pass ' + (i+1))
-        let numbers;
 
-        // if (isUpDown) {
-        //     numbers = extractColumn(i);
-        // } else {
-        //     numbers = extractRow(i);
-        // }
-        numbers = isUpDown ? extractColumn(i) : extractRow(i);
+
+        let numbers = isUpDown ? extractColumn(i) : extractRow(i);
 
         if (isRight || isDown) {
             numbers = numbers.reverse()
         }
         console.log('extracted: ' + numbers)
-        numbers = shiftArrayElements(numbers);
+
         
         numbers = stackArray(numbers);
+        numbers = shiftArrayElements(numbers);
         while (findEqualAdjacent(numbers)) {
             numbers = stackArray(numbers);
-            console.log('stacked: ' + numbers)
             numbers = shiftArrayElements(numbers);
-            console.log('shifted: ' + numbers)
+            
+            
         }
-
+        console.log(numbers)
         if (isRight || isDown) {
             numbers = numbers.reverse()
         }
 
-        // if (isUpDown) {
-        //     replaceColumn(numbers, i);
-        // } else {
-        //     replaceRow(numbers, i);
-        // }
         isUpDown ? replaceColumn(numbers, i) : replaceRow(numbers, i);
     }
-
+    placeNewNumber()
+    updateGrid() //update the grid after
 }
 
 
@@ -91,13 +106,15 @@ function findEqualAdjacent(arr) {
  * @returns an "shifted array"
  */
 function shiftArrayElements(arr) {
-    while(arr[0] == 0) {
+    while(arr[0] == 0 && arr.find(v => v != 0)) {
         arr.shift();
         arr.push(0);
+        console.log('akshan')
     }
 
     let squishedZeros = true;
     while (squishedZeros) {
+        
         for (let i = 0; i < arr.length; i++) {
             if (arr[i] == 0 && i != arr.length - 1) {
                 arr = arr.filter((v,index) => i !== index);
@@ -156,3 +173,53 @@ function replaceColumn(newColumn, colIndex) {
     }
 }
 
+
+//FUNCTIONS FOR CONTROLLING THE TALBE IN THE DOM AKSHAN!
+
+function updateGrid() {
+    
+    let table = document.querySelector('table');
+
+    if (table) {
+        table.textContent = undefined;
+    } else {
+        table = document.createElement('table');
+        document.querySelector('#grid-section').appendChild(table)
+    }
+
+    for (let i = 0; i < GRID_SIZE; i++) {
+        const newRow = document.createElement('tr');
+        for (let j = 0; j < GRID_SIZE; j++) {
+            const newCell = document.createElement('td');
+            newCell.textContent = grid[i][j];
+            newCell.setAttribute('class', `n${grid[i][j]}`)
+            newRow.appendChild(newCell)
+        }
+        table.appendChild(newRow)
+        console.log('akshan new row appeneded');
+    }
+
+
+}
+
+function placeNewNumber() {
+
+    //place either a 2 or 4 by random.
+    const newNumber = (randomInt(2) + 1) * 2;
+
+    let randRowIndex = randomInt(GRID_SIZE);
+    let randColIndex = randomInt(GRID_SIZE);
+    console.log(grid)
+    //pick a new cell by random if the cell value isnt 0
+    while (grid[randRowIndex][randColIndex] != 0) {
+        randRowIndex = randomInt(GRID_SIZE) + 1;
+        randColIndex = randomInt(GRID_SIZE) + 1;
+        console.log('akshan')
+    }
+    grid[randRowIndex][randColIndex] = newNumber;
+}
+
+
+function randomInt(max) {
+    return Math.floor(Math.random()*max);
+}
