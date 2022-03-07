@@ -3,20 +3,14 @@
 
 
 document.addEventListener('DOMContentLoaded', setup);
-const grid = [[2,4,4,8],[0,0,16,16],[32,16,0,4],[16,0,0,4]];
+const grid = [[16,0,8,16],[0,0,2,4],[4,4,4,8],[128,0,2,4]];
 const GRID_SIZE = 4;
 function setup() {
 
     console.table(grid)
 
-    leftOption()
+    makeMove(true, false, true)
     console.table(grid)
-
-    while (findEqualAdjacent(arr)) {
-        arr = stackArray(arr);
-        console.log(arr);
-    }
-
 
     
 }
@@ -26,11 +20,7 @@ function stackArray(arr) {
     let isModified = false;
     arr.forEach((element, index) => {
         if (index < arr.length - 1 && !isModified) {
-            if (element == 0) {
-                arr = arr.filter((v,i) => i !== index);
-                arr.push(0);
-                isModified = true;
-            } else if (element == arr[index + 1]) {
+            if (element == arr[index + 1]) {
                 arr[index] = element + arr[index + 1];
                 //splitting algorithm to remove the next value that has been added.
                 arr = arr.filter((v,i) => i !== index + 1);
@@ -49,28 +39,46 @@ function stackArray(arr) {
 }
 
 
-function leftOption() {
-    //algorithm: take the first row (extract, then shift/slide the first non0 to left) and then perform the stacking algorithm
-    //after stack insert the stacked array into the grid
-
-    //do this for each row.
+function makeMove(isUpDown, isRight, isDown) {
     for (let i = 0; i < grid.length; i++) {
         console.log('akshan pass ' + (i+1))
-        let row = extractRow(i);
-        console.log('extracted: ' + row)
-        row = shiftArrayElements(row);
-        
-        row = stackArray(row);
-        while (findEqualAdjacent(row)) {
-            row = stackArray(row);
-            console.log('stacked: ' + row)
-            row = shiftArrayElements(row);
-            console.log('shifted: ' + row)
+        let numbers;
+
+        // if (isUpDown) {
+        //     numbers = extractColumn(i);
+        // } else {
+        //     numbers = extractRow(i);
+        // }
+        numbers = isUpDown ? extractColumn(i) : extractRow(i);
+
+        if (isRight || isDown) {
+            numbers = numbers.reverse()
         }
-        replaceRow(row, i);
+        console.log('extracted: ' + numbers)
+        numbers = shiftArrayElements(numbers);
+        
+        numbers = stackArray(numbers);
+        while (findEqualAdjacent(numbers)) {
+            numbers = stackArray(numbers);
+            console.log('stacked: ' + numbers)
+            numbers = shiftArrayElements(numbers);
+            console.log('shifted: ' + numbers)
+        }
+
+        if (isRight || isDown) {
+            numbers = numbers.reverse()
+        }
+
+        // if (isUpDown) {
+        //     replaceColumn(numbers, i);
+        // } else {
+        //     replaceRow(numbers, i);
+        // }
+        isUpDown ? replaceColumn(numbers, i) : replaceRow(numbers, i);
     }
 
 }
+
 
 
 function findEqualAdjacent(arr) {
