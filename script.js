@@ -3,9 +3,19 @@
 
 
 document.addEventListener('DOMContentLoaded', setup);
-// const tgrid = [[16,0,8,16],[0,0,2,4],[4,4,4,8],[2048,0,2,4]];
+
 const grid = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 const GRID_SIZE = 4;
+
+
+        
+/*
+//if you want to get the game to keep stacking numbers even if a merge has already occured, set repeatedStacking to true
+ex: 2 2 4 8
+a move right will give you 0 4 4 8 wihout repeated stack/merging
+a move right will give you 0 0 0 16 if you repeat stacking
+*/
+const repeatedStacking = false;
 function setup() {
 
     placeNewNumber();
@@ -74,15 +84,20 @@ function makeMove(isUpDown, isRight, isDown) {
         }
         console.log('extracted: ' + numbers)
 
-        
+        numbers = shiftArrayElements(numbers);
         numbers = stackArray(numbers);
         numbers = shiftArrayElements(numbers);
-        while (findEqualAdjacent(numbers)) {
-            numbers = stackArray(numbers);
-            numbers = shiftArrayElements(numbers);
-            
-            
+
+        
+        if (repeatedStacking) {
+            while (findEqualAdjacent(numbers)) {
+                numbers = stackArray(numbers);
+                numbers = shiftArrayElements(numbers);
+                
+                
+            }
         }
+        
         console.log(numbers)
         if (isRight || isDown) {
             numbers = numbers.reverse()
@@ -204,8 +219,10 @@ function updateGrid() {
 
 function placeNewNumber() {
 
-    //place either a 2 or 4 by random.
-    const newNumber = (randomInt(2) + 1) * 2;
+    //pick a number between 0 and 7
+    //mostly will spawn 2's but make is so there is a 1/8 change of spawning a 4
+    const randInt = randomInt(8)
+    const newNumber = randInt == 0 ? 4 : 2;
 
     let randRowIndex = randomInt(GRID_SIZE);
     let randColIndex = randomInt(GRID_SIZE);
